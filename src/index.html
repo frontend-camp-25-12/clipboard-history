@@ -1,0 +1,20 @@
+<!doctype html>
+<html data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' file:;
+               script-src 'self' 'unsafe-inline';
+               style-src 'self' 'unsafe-inline';
+               img-src 'self' data: file:;
+               font-src 'self' file:;
+               connect-src 'self' http://your-api.com;"
+    />
+    <title>剪贴板历史</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./renderer.jsx"></script>
+  </body>
+</html>

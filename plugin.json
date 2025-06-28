@@ -1,0 +1,46 @@
+{
+  "id": "com.example.clipboardhistory",
+  "name": "剪贴板历史",
+  "description": "记录剪贴板历史，支持文本、图片和文件的复制与粘贴",
+  "version": "1.0.0",
+  "logo": "./src/assets/icons/icon.png",
+  "preload": "./preload.js",
+  "content": "./dist/src/index.html",
+  "background": true,
+  "window": {
+    "width": 800,
+    "height": 600,
+    "disableTransition": false,
+    "frame": true,
+    "transparent": false,
+    "resizable": true
+  },
+  "features": [
+    {
+      "code": "openClipboardHistory",
+      "label": "打开剪贴板历史",
+      "hotKey": false,
+      "searchable": true,
+      "cmds": [
+        "search",
+        {
+          "type": "any"
+        }
+      ]
+    },
+    {
+      "code": "captureClipboard",
+      "label": "开始捕获剪贴板",
+      "hotKey": false,
+      "searchable": true,
+      "cmds": ["capture", "start"]
+    },
+    {
+      "code": "pauseClipboard",
+      "label": "暂停捕获剪贴板",
+      "hotKey": false,
+      "searchable": true,
+      "cmds": ["pause", "stop"]
+    }
+  ]
+}

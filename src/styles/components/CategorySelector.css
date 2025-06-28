@@ -1,0 +1,35 @@
+/* 分类选择器样式 */
+.category-selector {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.category-btn {
+  padding: 6px 12px;
+  margin: 0 5px;
+  border: none;
+  background: var(--color-category-bg);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text);
+}
+
+.category-btn:hover {
+  background: var(--color-category-hover);
+}
+
+.category-btn.active {
+  background: var(--color-category-active-bg);
+  color: var(--color-category-active-text);
+}
+
+.count-badge {
+  margin-left: 5px;
+  font-size: 0.85em;
+  opacity: 0.8;
+}
