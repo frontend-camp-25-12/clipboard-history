@@ -4,7 +4,6 @@ import HistoryList from './components/HistoryList'
 import Notification from './components/Notification'
 import SettingsModal from './components/SettingsModal'
 
-// 导入样式文件
 import './styles/components/App.css'
 
 function App() {

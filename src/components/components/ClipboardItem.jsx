@@ -12,8 +12,6 @@ const ClipboardItem = ({
   const [expanded, setExpanded] = useState(false)
   const [imageEnlarged, setImageEnlarged] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
-  const [expandedFiles, setExpandedFiles] = useState(false)
-  const [fileStatus, setFileStatus] = useState({})
 
   const handleCopy = () => {
     onCopy(item)
@@ -58,53 +56,6 @@ const ClipboardItem = ({
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [handleKeyDown])
-
-  useEffect(() => {
-    if (item.type === 'file' && Array.isArray(item.content)) {
-      const checkFiles = () => {
-        const status = {}
-        item.content.forEach((filePath) => {
-          try {
-            if (
-              window.clipboardPlugin &&
-              window.clipboardPlugin.checkFileExists
-            ) {
-              status[filePath] =
-                window.clipboardPlugin.checkFileExists(filePath)
-            }
-          } catch (error) {
-            console.error('检查文件存在失败:', error)
-            status[filePath] = true
-          }
-        })
-        setFileStatus(status)
-      }
-
-      // 初始检查
-      checkFiles()
-
-      // 添加定期检查（每1分钟检查一次）
-      const interval = setInterval(checkFiles, 60000)
-
-      return () => clearInterval(interval)
-    }
-  }, [item])
-
-  const toggleFileList = (e) => {
-    e.stopPropagation()
-    setExpandedFiles(!expandedFiles)
-  }
-
-  const openFile = (e, filePath) => {
-    e.stopPropagation()
-    try {
-      if (window.clipboardPlugin && window.clipboardPlugin.openFile) {
-        window.clipboardPlugin.openFile(filePath)
-      }
-    } catch (error) {
-      console.error('打开文件失败:', error)
-    }
-  }
 
   return (
     <div
@@ -181,58 +132,28 @@ const ClipboardItem = ({
         {item.type === 'file' && !item.isImage && (
           <div className="file-info">
             {Array.isArray(item.content) ? (
+              // 多文件展示
               <div className="multiple-files">
                 <div className="file-count">
                   共 {item.content.length} 个文件
-                  {item.content.length > 3 && (
-                    <button
-                      className="file-expand-btn"
-                      onClick={toggleFileList}
-                    >
-                      {expandedFiles ? '收起' : '展开'}
-                    </button>
-                  )}
                 </div>
-
-                <div className={`file-list ${expandedFiles ? 'expanded' : ''}`}>
-                  {item.content.map((file, index) => {
-                    const fileExists = fileStatus[file] !== false
-                    return (
-                      <div
-                        key={index}
-                        className={`file-item ${fileExists ? '' : 'deleted'}`}
-                        onClick={(e) => openFile(e, file)}
-                        title={fileExists ? '点击打开文件' : '文件已被删除'}
-                      >
-                        <div className="file-name">
-                          {getFileName(file)}
-                          {!fileExists && (
-                            <span className="file-deleted-badge">已删除</span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
+                <div className="file-list">
+                  {item.content.slice(0, 3).map((file, index) => (
+                    <div key={index} className="file-item">
+                      <div className="file-name">{getFileName(file)}</div>
+                    </div>
+                  ))}
+                  {item.content.length > 3 && (
+                    <div className="file-more">
+                      + {item.content.length - 3} 个文件
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
+              // 单文件展示
               <>
-                <div
-                  className={`file-item ${fileStatus[item.content] !== false ? '' : 'deleted'}`}
-                  onClick={(e) => openFile(e, item.content)}
-                  title={
-                    fileStatus[item.content] !== false
-                      ? '点击打开文件'
-                      : '文件已被删除'
-                  }
-                >
-                  <div className="file-name">
-                    {getFileName(item.content)}
-                    {fileStatus[item.content] === false && (
-                      <span className="file-deleted-badge">已删除</span>
-                    )}
-                  </div>
-                </div>
+                <div className="file-name">{getFileName(item.content)}</div>
                 <div className="file-path">{item.content}</div>
               </>
             )}

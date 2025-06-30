@@ -1,6 +1,7 @@
 const Store = require('electron-store')
 const clipboardListener = require('clipboard-event')
-const { clipboard, nativeImage } = require('electron')
+const clipboardEx = require('electron-clipboard-ex')
+const { clipboard, nativeImage, shell } = require('electron')
 const fs = require('fs')
 const path = require('path')
 
@@ -16,7 +17,7 @@ const store = new Store({
   }
 })
 
-let lastContent = null
+let lastContent = []
 const IMAGE_EXTENSIONS = [
   '.png',
   '.jpg',
@@ -38,123 +39,148 @@ const audioPaths = {
   copy: path.join(__dirname, './src/assets/sounds/copy.mp3')
 }
 
-// 音频缓存
-const audioCache = {}
-
-// 预加载音频文件
-function preloadAudios() {
-  Object.keys(audioPaths).forEach((type) => {
-    try {
-      const data = fs.readFileSync(audioPaths[type])
-      audioCache[type] = 'data:audio/mp3;base64,' + data.toString('base64')
-    } catch (error) {
-      console.error(`预加载音频 ${type} 失败:`, error)
-    }
-  })
-}
+// 添加路径检查
+console.log('音频路径验证:', {
+  success: fs.existsSync(audioPaths.success),
+  error: fs.existsSync(audioPaths.error)
+})
 
 // 播放音频函数
 function playAudio(type) {
   const settings = store.get('settings')
   if (!settings.enableAudio) return
 
-  const audioData = audioCache[type]
-  if (!audioData) return
-
   try {
-    const audio = new Audio(audioData)
+    const audio = new Audio(audioPaths[type])
     audio.play().catch((error) => {
-      console.error('播放音频失败:', error)
+      if (error.name === 'NotAllowedError') {
+        console.warn('播放被用户阻止，请检查浏览器设置')
+      } else {
+        console.error('播放失败:', error)
+      }
     })
   } catch (error) {
     console.error('创建音频对象失败:', error)
   }
 }
 
-function checkClipboard() {
-  const timestamp = new Date().toISOString()
-  let handled = false
-  let result = null
-
-  // 1. 优先检测实际图像数据
-  const image = clipboard.readImage('clipboard')
-  if (!image.isEmpty()) {
-    const curImage = image.toDataURL()
-    if (curImage.startsWith('data:image/') && curImage.length > 50) {
-      if (curImage !== lastContent) {
-        lastContent = curImage
-        result = {
-          type: 'image',
-          content: curImage,
-          timestamp,
-          preview: curImage,
-          star: false
-        }
-        handled = true
-      }
-    }
+function compareContent(lastContent, newContent) {
+  if (Array.isArray(lastContent) && Array.isArray(newContent)) {
+    return (
+      lastContent.length === newContent.length &&
+      lastContent.every((val, index) => val === newContent[index])
+    )
   }
-
-  // 2. 如果图像数据无效或未处理，检测文件路径
-  if (!handled && clipboard.has('FileNameW')) {
-    try {
-      const buffer = clipboard.readBuffer('FileNameW')
-      const filePath = buffer.toString('ucs2').replace(/\0/g, '')
-
-      if (filePath && filePath.length > 0 && filePath !== lastContent) {
-        lastContent = filePath
-
-        const fileExt = path.extname(filePath).toLowerCase()
-        const isImageFile = IMAGE_EXTENSIONS.includes(fileExt)
-
-        // 如果是小图片文件，优先返回图像数据
-        if (isImageFile && fs.existsSync(filePath)) {
-          try {
-            const stats = fs.statSync(filePath)
-            if (stats.size <= MAX_IMAGE_SIZE) {
-              const fileImage = nativeImage.createFromPath(filePath)
-              const curImage = fileImage.toDataURL()
-
-              if (curImage) {
-                result = {
-                  type: 'image',
-                  content: curImage,
-                  timestamp,
-                  preview: curImage,
-                  star: false
-                }
-                handled = true
-              }
-            }
-          } catch (error) {
-            console.error('读取图片文件失败:', error)
-          }
-        }
-
-        // 如果未处理，返回文件路径
-        if (!handled) {
-          result = { type: 'file', content: filePath, timestamp, star: false }
-          handled = true
-        }
-      }
-    } catch (error) {
-      console.error('读取 FileNameW 失败:', error)
-    }
-  }
-
-  // 3. 如果前两者未处理，检测文本
-  if (!handled) {
-    const text = clipboard.readText()
-    if (text && text !== lastContent) {
-      lastContent = text
-      result = { type: 'text', content: text, timestamp }
-    }
-  }
-
-  return result
+  return lastContent === newContent
 }
 
-preloadAudios()
+function checkClipboard() {
+  const isWindows = process.platform === 'win32'
+  const isMac = process.platform === 'darwin'
+  const timestamp = new Date().toISOString()
+  const filePaths = clipboardEx.readFilePaths()
+  let result = null
+  if (isWindows || isMac) {
+    if (filePaths.length > 1) {
+      const isSame = compareContent(lastContent, filePaths)
+      if (!isSame) {
+        lastContent = filePaths
+        result = {
+          type: 'file',
+          content: filePaths,
+          timestamp,
+          isImage: false,
+          star: false
+        }
+        console.log('检测到剪贴板变更:', filePaths)
+      }
+    } else {
+      let handled = false
+
+      // 1. 优先检测实际图像数据
+      const image = clipboard.readImage('clipboard')
+      if (!image.isEmpty()) {
+        const curImage = image.toDataURL()
+        if (curImage.startsWith('data:image/') && curImage.length > 50) {
+          if (!compareContent(curImage, lastContent)) {
+            lastContent = curImage
+            result = {
+              type: 'image',
+              content: curImage,
+              timestamp,
+              preview: curImage,
+              star: false
+            }
+            handled = true
+          }
+        }
+      }
+
+      // 2. 如果图像数据无效或未处理，检测文件路径
+      if (!handled && clipboard.has('FileNameW')) {
+        try {
+          const buffer = clipboard.readBuffer('FileNameW')
+          const filePath = buffer.toString('ucs2').replace(/\0/g, '')
+
+          if (filePath && filePath.length > 0 && filePath !== lastContent) {
+            lastContent = filePath
+
+            const fileExt = path.extname(filePath).toLowerCase()
+            const isImageFile = IMAGE_EXTENSIONS.includes(fileExt)
+
+            // 如果是小图片文件，优先返回图像数据
+            if (isImageFile && fs.existsSync(filePath)) {
+              try {
+                const stats = fs.statSync(filePath)
+                if (stats.size <= MAX_IMAGE_SIZE) {
+                  const fileImage = nativeImage.createFromPath(filePath)
+                  const curImage = fileImage.toDataURL()
+
+                  if (curImage) {
+                    result = {
+                      type: 'image',
+                      content: curImage,
+                      timestamp,
+                      preview: curImage,
+                      star: false
+                    }
+                    handled = true
+                  }
+                }
+              } catch (error) {
+                console.error('读取图片文件失败:', error)
+              }
+            }
+
+            // 如果未处理，返回文件路径
+            if (!handled) {
+              result = {
+                type: 'file',
+                content: filePath,
+                timestamp,
+                isImage: false,
+                star: false
+              }
+              handled = true
+            }
+          }
+        } catch (error) {
+          console.error('读取 FileNameW 失败:', error)
+        }
+      }
+
+      // 3. 如果前两者未处理，检测文本
+      if (!handled) {
+        const text = clipboard.readText()
+        if (text && !compareContent(text, lastContent)) {
+          lastContent = text
+          result = { type: 'text', content: text, timestamp, star: false }
+        }
+      }
+    }
+  }
+  return result
+}
 
 // 存储供渲染进程调用的API
 const pluginAPI = {
@@ -215,12 +241,11 @@ const pluginAPI = {
           break
 
         case 'file':
-          if (fs.existsSync(content)) {
-            const filePath = path.resolve(content)
-            const buffer = Buffer.alloc((filePath.length + 1) * 2)
-            buffer.write(filePath, 0, buffer.length - 2, 'utf16le')
-            buffer.writeUInt16LE(0, buffer.length - 2)
-            clipboard.writeBuffer('FileNameW', buffer)
+          if (typeof content === 'string') {
+            clipboardEx.writeFilePaths([content])
+            playAudio('copy')
+          } else if (Array.isArray(content)) {
+            clipboardEx.writeFilePaths(content)
             playAudio('copy')
           }
           break
@@ -285,6 +310,30 @@ const pluginAPI = {
     // 返回停止监听函数
     return () => {
       clipboardListener.stopListening()
+    }
+  },
+
+  // 检查文件是否存在
+  checkFileExists: (filePath) => {
+    try {
+      return fs.existsSync(filePath)
+    } catch (error) {
+      console.error('检查文件存在失败:', error)
+      return false
+    }
+  },
+
+  // 打开文件
+  openFile: (filePath) => {
+    try {
+      shell.openPath(filePath).then((error) => {
+        if (error) {
+          console.error('打开文件失败:', error)
+          // 可以在这里添加通知用户的逻辑
+        }
+      })
+    } catch (error) {
+      console.error('打开文件失败:', error)
     }
   }
 }

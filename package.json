@@ -32,9 +32,10 @@
     "clipboard-event": "^1.6.0",
     "date-fns": "^4.1.0",
     "electron-clipboard-extended": "^1.1.1",
-    "electron-store": "^10.1.0",
-    "picomatch": "latest",
+    "electron-store": "^8.1.0",
+    "picomatch": "^4.0.2",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "vite": "^6.3.5"
   }
 }

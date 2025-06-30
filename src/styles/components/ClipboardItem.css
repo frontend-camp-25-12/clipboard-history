@@ -193,24 +193,6 @@
   transform: scale(1.1);
 }
 
-.file-info {
-  font-size: 0.9rem;
-}
-
-.file-name {
-  font-weight: 500;
-  margin-bottom: 5px;
-  color: var(--color-text);
-}
-
-.file-path {
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .item-footer {
   padding: 8px 15px;
   background-color: var(--color-item-footer-bg);
@@ -248,4 +230,106 @@
   background-color: var(--color-star-hover-bg);
   color: var(--color-star-active);
   transform: scale(1.1);
+}
+
+.multiple-files {
+  width: 100%;
+}
+
+.file-count {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.file-info {
+  font-size: 0.9rem;
+}
+
+.file-path {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-name {
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.file-more {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 4px;
+  margin-top: 4px;
+}
+
+/* 添加以下样式 */
+
+.file-expand-btn {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.file-expand-btn:hover {
+  background-color: var(--color-expand-btn-hover);
+}
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 150px; /* 默认高度 */
+  overflow-y: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.file-list.expanded {
+  max-height: 500px; /* 展开后的高度 */
+  overflow-y: auto;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+  background-color: var(--color-item-header-bg);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.file-item:hover {
+  background-color: var(--color-category-hover);
+}
+
+.file-item.deleted {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.file-item.deleted .file-name {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.file-deleted-badge {
+  margin-left: 8px;
+  font-size: 0.7rem;
+  background-color: var(--color-delete-hover);
+  color: var(--color-delete);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
