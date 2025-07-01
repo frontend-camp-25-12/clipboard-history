@@ -3,10 +3,19 @@ import '../styles/components/SettingsModal.css'
 
 const SettingsModal = ({ settings, onUpdate, onClose }) => {
   const handleToggle = (key) => {
+    console.log('Before:', settings)
     onUpdate({
       ...settings,
       [key]: !settings[key]
     })
+  }
+
+  const openHotkeySettings = () => {
+    if (window.platform && window.platform.openHotkeySettings) {
+      window.platform.openHotkeySettings('search')
+    } else {
+      alert('快捷键设置功能在当前环境中不可用')
+    }
   }
 
   return (
@@ -42,6 +51,13 @@ const SettingsModal = ({ settings, onUpdate, onClose }) => {
               />
               <span className="slider"></span>
             </div>
+          </div>
+
+          <div className="setting-item">
+            <label>全局快捷键</label>
+            <button className="hotkey-btn" onClick={openHotkeySettings}>
+              设置快捷键
+            </button>
           </div>
 
           <div className="info-box">

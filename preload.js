@@ -2,6 +2,7 @@ const Store = require('electron-store')
 const clipboardListener = require('clipboard-event')
 const clipboardEx = require('electron-clipboard-ex')
 const { clipboard, nativeImage, shell } = require('electron')
+
 const fs = require('fs')
 const path = require('path')
 
@@ -196,7 +197,10 @@ const pluginAPI = {
   },
   getHistory: () => store.get('history', []),
   getSettings: () => store.get('settings', {}),
-  updateSettings: (settings) => store.set('settings', settings),
+  updateSettings: (settings) => {
+    console.log('Updating Store:', settings)
+    store.set('settings', settings)
+  },
   deleteItem: (id) => {
     let history = store.get('history', [])
     history = history.filter((item) => item.timestamp !== id)

@@ -114,6 +114,7 @@ function App() {
 
   // 更新设置
   const handleUpdateSettings = (newSettings) => {
+    console.log('New Settings:', newSettings)
     setSettings(newSettings)
     window.clipboardPlugin.updateSettings(newSettings)
 

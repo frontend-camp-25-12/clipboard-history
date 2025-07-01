@@ -18,29 +18,10 @@
   "features": [
     {
       "code": "openClipboardHistory",
-      "label": "打开剪贴板历史",
-      "hotKey": false,
+      "label": "打开界面，查找想要复制的剪贴板历史",
+      "hotKey": true,
       "searchable": true,
-      "cmds": [
-        "search",
-        {
-          "type": "any"
-        }
-      ]
-    },
-    {
-      "code": "captureClipboard",
-      "label": "开始捕获剪贴板",
-      "hotKey": false,
-      "searchable": true,
-      "cmds": ["capture", "start"]
-    },
-    {
-      "code": "pauseClipboard",
-      "label": "暂停捕获剪贴板",
-      "hotKey": false,
-      "searchable": true,
-      "cmds": ["pause", "stop"]
+      "cmds": ["打开、搜索、复制剪贴板历史记录", "文本、图片、文件历史"]
     }
   ]
 }
