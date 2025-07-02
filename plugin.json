@@ -3,9 +3,9 @@
   "name": "剪贴板历史",
   "description": "记录剪贴板历史，支持文本、图片和文件的复制与粘贴",
   "version": "1.0.0",
-  "logo": "./src/assets/icons/icon.png",
-  "preload": "./dist/preload/preload.js",
-  "content": "./dist/src/index.html",
+  "logo": "icons/icon.png",
+  "preload": "preload/preload.js",
+  "content": "src/index.html",
   "background": true,
   "window": {
     "width": 800,

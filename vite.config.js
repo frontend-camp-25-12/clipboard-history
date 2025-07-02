@@ -1,12 +1,30 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(),
+  viteStaticCopy({ // preload相关
+    targets: [
+      {
+        src: 'plugin.json',
+        dest: '.'
+      },
+      {
+        src: 'node_modules/clipboard-event/',
+        dest: 'preload/node_modules'
+      },
+      {
+        src: 'node_modules/electron-clipboard-ex/',
+        dest: 'preload/node_modules'
+      }, {
+        src: 'preload.js',
+        dest: 'preload/'
+      }
+    ]
+  })],
   base: "./",
-
-  // 关键配置
   build: {
     outDir: "dist",
     target: "esnext",
@@ -30,4 +48,5 @@ export default defineConfig({
       process.env.NODE_ENV || "development"
     ),
   },
+  publicDir: path.resolve(__dirname, "src/public"), // logo复制
 });

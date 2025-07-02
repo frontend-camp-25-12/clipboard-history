@@ -1,4 +1,3 @@
-const Store = require('electron-store')
 const clipboardListener = require('clipboard-event')
 const clipboardEx = require('electron-clipboard-ex')
 const { clipboard, nativeImage, shell } = require('electron')
@@ -6,17 +5,16 @@ const { clipboard, nativeImage, shell } = require('electron')
 const fs = require('fs')
 const path = require('path')
 
-const store = new Store({
-  name: 'clipboard-history-plugin',
-  defaults: {
-    history: [],
-    settings: {
-      enableAudio: true,
-      shouldCapture: true,
-      theme: 'system'
-    }
-  }
-})
+// 暂时模拟electron-store 的行为，应该改为window.platform.configGet
+const mockStore = {}
+const store = {
+  get: (key, defaultValue) => {
+    return mockStore[key] || defaultValue
+  },
+  set: (key, value) => {
+    mockStore[key] = value
+  },
+}
 
 let lastContent = []
 const IMAGE_EXTENSIONS = [
