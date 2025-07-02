@@ -2,7 +2,7 @@
   "name": "clipboard-history",
   "version": "1.0.0",
   "description": "Desktop tool: clipboard-history",
-  "main": "main.js",
+  "main": "dist/preload/preload.js",
   "scripts": {
     "start": "electron .",
     "build": "vite build",

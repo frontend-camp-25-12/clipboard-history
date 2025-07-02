@@ -1,86 +1,66 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import CategorySelector from './components/CategorySelector'
-import HistoryList from './components/HistoryList'
-import Notification from './components/Notification'
-import SettingsModal from './components/SettingsModal'
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import CategorySelector from './components/CategorySelector';
+import HistoryList from './components/HistoryList';
+import Notification from './components/Notification';
+import SettingsModal from './components/SettingsModal';
 
-import './styles/components/App.css'
+import './styles/components/App.css';
 
 function App() {
-  const { t } = useTranslation()
-  const [history, setHistory] = useState([])
+  const { t } = useTranslation();
+  const [history, setHistory] = useState([]);
   const [settings, setSettings] = useState({
     enableAudio: true,
     shouldCapture: true,
     theme: 'system'
-  })
-  const [storageSize, setStorageSize] = useState(0)
-  const [showSettings, setShowSettings] = useState(false)
-  const [currentCategory, setCurrentCategory] = useState('all')
+  });
+  const [showSettings, setShowSettings] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState('all');
   const [notification, setNotification] = useState({
     show: false,
     message: ''
-  })
-  const [theme, setTheme] = useState('light')
+  });
+  const [theme, setTheme] = useState('light');
 
   // 使用useMemo优化过滤性能
   const filteredHistory = useMemo(() => {
-    if (currentCategory === 'all') return history
-    if (currentCategory === 'star') return history.filter((item) => item.star)
-    return history.filter((item) => item.type === currentCategory)
-  }, [history, currentCategory])
-
-  // 更新存储信息
-  const updateStorageSize = () => {
-    if (window.clipboardPlugin && window.clipboardPlugin.getStorageSize) {
-      const size = window.clipboardPlugin.getStorageSize()
-      setStorageSize(size)
-    }
-  }
-
-  useEffect(() => {
-    updateStorageSize()
-  }, [history])
-
-  const formatStorageSize = useMemo(() => {
-    if (storageSize < 1024) return `${storageSize} B`
-    if (storageSize < 1024 * 1024)
-      return `${(storageSize / 1024).toFixed(2)} KB`
-    return `${(storageSize / (1024 * 1024)).toFixed(2)} MB`
-  }, [storageSize])
+    if (currentCategory === 'all') return history;
+    if (currentCategory === 'star') return history.filter((item) => item.star);
+    return history.filter((item) => item.type === currentCategory);
+  }, [history, currentCategory]);
 
   const handleCategoryChange = (category) => {
-    setCurrentCategory(category)
-  }
+    setCurrentCategory(category);
+  };
 
-  const stopClipboardRef = useRef(null)
+  const stopClipboardRef = useRef(null);
 
   // 应用主题设置
   const applyTheme = (themeValue) => {
-    document.documentElement.setAttribute('data-theme', themeValue)
-    setTheme(themeValue)
-  }
+    document.documentElement.setAttribute('data-theme', themeValue);
+    setTheme(themeValue);
+  };
 
   useEffect(() => {
     // 初始化加载历史记录和设置
-    const loadedSettings = window.clipboardPlugin.getSettings()
-    setSettings(loadedSettings)
-    setHistory(window.clipboardPlugin.getHistory())
+    const loadedSettings = window.clipboardPlugin.getSettings();
+    setSettings(loadedSettings);
+    setHistory(window.clipboardPlugin.getHistory());
 
     // 初始化主题
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
       .matches
       ? 'dark'
-      : 'light'
+      : 'light';
 
     // 优先使用用户设置的主题
-    const userTheme = loadedSettings.theme || 'system'
+    const userTheme = loadedSettings.theme || 'system';
 
     if (userTheme === 'system') {
-      applyTheme(systemTheme)
+      applyTheme(systemTheme);
     } else {
-      applyTheme(userTheme)
+      applyTheme(userTheme);
     }
 
     // 开始监听剪贴板
@@ -90,35 +70,35 @@ function App() {
     ) {
       stopClipboardRef.current = window.clipboardPlugin.startClipboardListening(
         (newHistory) => {
-          setHistory(newHistory)
+          setHistory(newHistory);
         }
-      )
+      );
     }
 
     // 监听系统主题变化
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleSystemThemeChange = (e) => {
       if (settings.theme === 'system') {
-        applyTheme(e.matches ? 'dark' : 'light')
+        applyTheme(e.matches ? 'dark' : 'light');
       }
-    }
+    };
 
-    mediaQuery.addEventListener('change', handleSystemThemeChange)
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
 
     // 组件卸载时停止监听
     return () => {
       if (stopClipboardRef.current) {
-        stopClipboardRef.current()
+        stopClipboardRef.current();
       }
-      mediaQuery.removeEventListener('change', handleSystemThemeChange)
-    }
-  }, [])
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, []);
 
   // 更新设置
   const handleUpdateSettings = (newSettings) => {
-    console.log('New Settings:', newSettings)
-    setSettings(newSettings)
-    window.clipboardPlugin.updateSettings(newSettings)
+    console.log('New Settings:', newSettings);
+    setSettings(newSettings);
+    window.clipboardPlugin.updateSettings(newSettings);
 
     // 如果主题变化，立即应用
     if (newSettings.theme !== settings.theme) {
@@ -126,57 +106,57 @@ function App() {
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
           .matches
           ? 'dark'
-          : 'light'
-        applyTheme(systemTheme)
+          : 'light';
+        applyTheme(systemTheme);
       } else {
-        applyTheme(newSettings.theme)
+        applyTheme(newSettings.theme);
       }
     }
-  }
+  };
 
   // 快速切换主题
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
+    const newTheme = theme === 'light' ? 'dark' : 'light';
     handleUpdateSettings({
       ...settings,
       theme: newTheme
-    })
-  }
+    });
+  };
 
   // 删除项目
   const handleDeleteItem = (timestamp) => {
-    const newHistory = window.clipboardPlugin.deleteItem(timestamp)
-    setHistory(newHistory)
-  }
+    const newHistory = window.clipboardPlugin.deleteItem(timestamp);
+    setHistory(newHistory);
+  };
 
   // 清空历史
   const handleClearHistory = () => {
-    const newHistory = window.clipboardPlugin.clearHistory()
-    setHistory(newHistory)
-  }
+    const newHistory = window.clipboardPlugin.clearHistory();
+    setHistory(newHistory);
+  };
 
   // 复制到剪贴板
   const handleCopy = (item) => {
     try {
-      window.clipboardPlugin.copyToClipboard(item.type, item.content)
+      window.clipboardPlugin.copyToClipboard(item.type, item.content);
     } catch (error) {
-      console.error('复制失败:', error)
+      console.error('复制失败:', error);
     }
-  }
+  };
 
   // 切换收藏
   const handleToggleStar = (timestamp) => {
-    const newHistory = window.clipboardPlugin.toggleStar(timestamp)
-    setHistory(newHistory)
-  }
+    const newHistory = window.clipboardPlugin.toggleStar(timestamp);
+    setHistory(newHistory);
+  };
 
   // 弹出消息
   const handleCopySuccess = () => {
-    setNotification({ show: true, message: '复制成功！' })
+    setNotification({ show: true, message: '复制成功！' });
     setTimeout(() => {
-      setNotification({ show: false, message: '' })
-    }, 2000)
-  }
+      setNotification({ show: false, message: '' });
+    }, 2000);
+  };
 
   return (
     <div className="app-container">
@@ -215,7 +195,7 @@ function App() {
       />
 
       <div className="storage-info">
-        {t('storageInfo', { count: history.length, size: formatStorageSize })}
+        {t('storageInfo', { count: history.length })}
       </div>
 
       <HistoryList
@@ -243,7 +223,7 @@ function App() {
 
       <Notification show={notification.show} message={notification.message} />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

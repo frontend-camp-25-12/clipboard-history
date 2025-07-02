@@ -1,5 +1,5 @@
-import '../styles/components/CategorySelector.css'
-import {  useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
+import '../styles/components/CategorySelector.css';
 
 const CategorySelector = ({ currentCategory, onChange, history }) => {
   const categoryCounts = {
@@ -8,8 +8,8 @@ const CategorySelector = ({ currentCategory, onChange, history }) => {
     image: history.filter((item) => item.type === 'image').length,
     file: history.filter((item) => item.type === 'file').length,
     star: history.filter((item) => item.star).length
-  }
-  const { t } = useTranslation()
+  };
+  const { t } = useTranslation();
   return (
     <div className="category-selector">
       {['all', 'text', 'image', 'file', 'star'].map((category) => (
@@ -23,7 +23,7 @@ const CategorySelector = ({ currentCategory, onChange, history }) => {
         </button>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default CategorySelector
+export default CategorySelector;
