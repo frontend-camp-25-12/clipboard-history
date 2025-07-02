@@ -22,6 +22,10 @@ export default defineConfig({
           dest: 'preload/node_modules'
         },
         {
+          src: 'node_modules/node-gyp-build/',
+          dest: 'preload/node_modules'
+        },
+        {
           src: 'preload.js',
           dest: 'preload/'
         },
