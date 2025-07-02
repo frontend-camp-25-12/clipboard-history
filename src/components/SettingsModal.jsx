@@ -1,7 +1,9 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import '../styles/components/SettingsModal.css'
 
 const SettingsModal = ({ settings, onUpdate, onClose }) => {
+  const { t } = useTranslation()
   const handleToggle = (key) => {
     console.log('Before:', settings)
     onUpdate({
@@ -22,15 +24,19 @@ const SettingsModal = ({ settings, onUpdate, onClose }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>设置</h2>
-          <button className="close-btn" onClick={onClose}>
+          <h2>{t('settings.title')}</h2> {/* 使用翻译 */}
+          <button
+            className="close-btn"
+            onClick={onClose}
+            title={t('button.close')} // 使用翻译
+          >
             ×
           </button>
         </div>
 
         <div className="modal-content">
           <div className="setting-item">
-            <label>启用音效</label>
+            <label>{t('settings.enableAudio')}</label> {/* 使用翻译 */}
             <div className="switch">
               <input
                 type="checkbox"
@@ -42,7 +48,7 @@ const SettingsModal = ({ settings, onUpdate, onClose }) => {
           </div>
 
           <div className="setting-item">
-            <label>监控剪贴板</label>
+            <label>{t('settings.shouldCapture')}</label> {/* 使用翻译 */}
             <div className="switch">
               <input
                 type="checkbox"
@@ -54,14 +60,14 @@ const SettingsModal = ({ settings, onUpdate, onClose }) => {
           </div>
 
           <div className="setting-item">
-            <label>全局快捷键</label>
+            <label>{t('settings.globalHotkey')}</label> {/* 使用翻译 */}
             <button className="hotkey-btn" onClick={openHotkeySettings}>
-              设置快捷键
+              {t('button.setHotkey')} {/* 使用翻译 */}
             </button>
           </div>
 
           <div className="info-box">
-            <p>图片文件预览仅支持小于 5MB 的图片</p>
+            <p>{t('settings.previewInfo')}</p> {/* 使用翻译 */}
           </div>
         </div>
       </div>

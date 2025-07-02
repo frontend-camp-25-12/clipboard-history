@@ -1,0 +1,59 @@
+{
+  "appTitle": "Clipboard History",
+  "storageInfo": "Storage: {{count}} items ({{size}})",
+  "category": {
+    "all": "All",
+    "text": "Text",
+    "image": "Image",
+    "file": "File",
+    "star": "Starred"
+  },
+  "itemType": {
+    "text": "Text",
+    "image": "Image",
+    "file": "File",
+    "imageFile": "Image File",
+    "multipleFiles": "Multiple Files"
+  },
+  "button": {
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "enlarge": "Enlarge",
+    "shrink": "Shrink",
+    "star": "Star",
+    "unstar": "Unstar",
+    "delete": "Delete",
+    "clearHistory": "Clear History",
+    "settings": "Settings",
+    "close": "Close",
+    "setHotkey": "Set Hotkey"
+  },
+  "tooltip": {
+    "toggleTheme": "Toggle theme",
+    "clearHistory": "Clear history",
+    "settings": "Settings",
+    "star": "Add to favorites",
+    "unstar": "Remove from favorites",
+    "delete": "Delete",
+    "copy": "Click to copy or press Ctrl+C",
+    "openFile": "Click to open file",
+    "fileDeleted": "File has been deleted"
+  },
+  "notification": {
+    "copySuccess": "Copied successfully!"
+  },
+  "emptyState": {
+    "line1": "Clipboard history is empty",
+    "line2": "After copying something, it will appear here"
+  },
+  "settings": {
+    "title": "Settings",
+    "enableAudio": "Enable audio",
+    "shouldCapture": "Monitor clipboard",
+    "globalHotkey": "Global hotkey",
+    "previewInfo": "Image preview is only supported for images under 5MB"
+  },
+  "fileInfo": {
+    "multipleFiles": "{{count}} files"
+  }
+}

@@ -1,4 +1,5 @@
 import format from 'date-fns/format'
+import { useTranslation } from 'react-i18next'
 import { useCallback, useEffect, useState } from 'react'
 import '../styles/components/ClipboardItem.css'
 
@@ -9,6 +10,7 @@ const ClipboardItem = ({
   onToggleStar,
   onCopySuccess
 }) => {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
   const [imageEnlarged, setImageEnlarged] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
@@ -113,34 +115,36 @@ const ClipboardItem = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* 添加悬停提示 */}
       {isHovered && (
         <div className="copy-hint">
-          <span>点击复制</span>
-          <span>或按 Ctrl+C</span>
+          <span>{t('tooltip.copy')}</span> {/* 使用翻译 */}
         </div>
       )}
 
       <div className="item-header">
         <span className="item-type">
-          {item.type === 'text' && '📝 文本'}
-          {item.type === 'image' && '🖼️ 图片'}
+          {item.type === 'text' && `📝 ${t('itemType.text')}`}
+          {item.type === 'image' && `🖼️ ${t('itemType.image')}`}
           {item.type === 'file' &&
             (item.isImage
-              ? '📷 图片文件'
+              ? `📷 ${t('itemType.imageFile')}`
               : Array.isArray(item.content)
-                ? '📂 多个文件'
-                : '📁 文件')}
+                ? `📂 ${t('itemType.multipleFiles')}`
+                : `📁 ${t('itemType.file')}`)}
         </span>
         <div className="item-actions">
           <button
             className={`star-btn ${item.star ? 'starred' : ''}`}
             onClick={handleToggleStar}
-            title={item.star ? '取消收藏' : '收藏'}
+            title={item.star ? t('tooltip.unstar') : t('tooltip.star')} // 使用翻译
           >
             {item.star ? '★' : '☆'}
           </button>
-          <button className="delete-btn" onClick={handleDelete}>
+          <button
+            className="delete-btn"
+            onClick={handleDelete}
+            title={t('tooltip.delete')} // 使用翻译
+          >
             ×
           </button>
         </div>
@@ -154,7 +158,8 @@ const ClipboardItem = ({
             </div>
             {item.content.length > 200 && (
               <button className="expand-btn" onClick={toggleExpand}>
-                {expanded ? '收起' : '展开'}
+                {expanded ? t('button.collapse') : t('button.expand')}{' '}
+                {/* 使用翻译 */}
               </button>
             )}
           </>
@@ -164,14 +169,16 @@ const ClipboardItem = ({
           <div className="image-preview-container">
             <img
               src={item.type === 'image' ? item.content : item.preview}
-              alt={item.type === 'image' ? '剪贴板图片' : '文件预览'}
+              alt={
+                item.type === 'image' ? t('itemType.image') : t('itemType.file')
+              } // 使用翻译
               className={`image-preview ${imageEnlarged ? 'enlarged' : ''}`}
               onClick={toggleImageEnlarge}
             />
             <button
               className="enlarge-btn"
               onClick={toggleImageEnlarge}
-              title={imageEnlarged ? '缩小图片' : '放大图片'}
+              title={imageEnlarged ? t('button.shrink') : t('button.enlarge')} // 使用翻译
             >
               {imageEnlarged ? '↗' : '⛶'}
             </button>
@@ -183,13 +190,17 @@ const ClipboardItem = ({
             {Array.isArray(item.content) ? (
               <div className="multiple-files">
                 <div className="file-count">
-                  共 {item.content.length} 个文件
+                  {t('fileInfo.multipleFiles', { count: item.content.length })}{' '}
+                  {/* 使用翻译 */}
                   {item.content.length > 3 && (
                     <button
                       className="file-expand-btn"
                       onClick={toggleFileList}
                     >
-                      {expandedFiles ? '收起' : '展开'}
+                      {expandedFiles
+                        ? t('button.collapse')
+                        : t('button.expand')}{' '}
+                      {/* 使用翻译 */}
                     </button>
                   )}
                 </div>
@@ -202,12 +213,18 @@ const ClipboardItem = ({
                         key={index}
                         className={`file-item ${fileExists ? '' : 'deleted'}`}
                         onClick={(e) => openFile(e, file)}
-                        title={fileExists ? '点击打开文件' : '文件已被删除'}
+                        title={
+                          fileExists
+                            ? t('tooltip.openFile')
+                            : t('tooltip.fileDeleted')
+                        } // 使用翻译
                       >
                         <div className="file-name">
                           {getFileName(file)}
                           {!fileExists && (
-                            <span className="file-deleted-badge">已删除</span>
+                            <span className="file-deleted-badge">
+                              {t('tooltip.fileDeleted')} {/* 使用翻译 */}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -222,14 +239,16 @@ const ClipboardItem = ({
                   onClick={(e) => openFile(e, item.content)}
                   title={
                     fileStatus[item.content] !== false
-                      ? '点击打开文件'
-                      : '文件已被删除'
-                  }
+                      ? t('tooltip.openFile')
+                      : t('tooltip.fileDeleted')
+                  } // 使用翻译
                 >
                   <div className="file-name">
                     {getFileName(item.content)}
                     {fileStatus[item.content] === false && (
-                      <span className="file-deleted-badge">已删除</span>
+                      <span className="file-deleted-badge">
+                        {t('tooltip.fileDeleted')} {/* 使用翻译 */}
+                      </span>
                     )}
                   </div>
                 </div>

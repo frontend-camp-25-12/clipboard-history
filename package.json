@@ -8,7 +8,9 @@
     "build": "vite build",
     "dev": "concurrently \"vite\" \"electron .\"",
     "dev:webpack": "webpack --watch --mode development",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:preload": "vite build -c vite.preload.config.js",
+    "build:all": "npm run build && npm run build:preload"
   },
   "keywords": [
     "clipboard",
@@ -36,9 +38,11 @@
     "date-fns": "^4.1.0",
     "electron-clipboard-extended": "^1.1.1",
     "electron-store": "^8.1.0",
+    "i18next": "^25.3.0",
     "picomatch": "^4.0.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-i18next": "^15.5.3",
     "vite": "^6.3.5"
   }
 }

@@ -1,0 +1,59 @@
+{
+  "appTitle": "剪贴板历史",
+  "storageInfo": "存储: {{count}}条 ({{size}})",
+  "category": {
+    "all": "全部",
+    "text": "文本",
+    "image": "图片",
+    "file": "文件",
+    "star": "收藏"
+  },
+  "itemType": {
+    "text": "文本",
+    "image": "图片",
+    "file": "文件",
+    "imageFile": "图片文件",
+    "multipleFiles": "多个文件"
+  },
+  "button": {
+    "expand": "展开",
+    "collapse": "收起",
+    "enlarge": "放大",
+    "shrink": "缩小",
+    "star": "收藏",
+    "unstar": "取消收藏",
+    "delete": "删除",
+    "clearHistory": "清空历史",
+    "settings": "设置",
+    "close": "关闭",
+    "setHotkey": "设置快捷键"
+  },
+  "tooltip": {
+    "toggleTheme": "切换主题",
+    "clearHistory": "清空历史",
+    "settings": "设置",
+    "star": "添加到收藏",
+    "unstar": "从收藏中移除",
+    "delete": "删除",
+    "copy": "点击复制或按Ctrl+C",
+    "openFile": "点击打开文件",
+    "fileDeleted": "文件已被删除"
+  },
+  "notification": {
+    "copySuccess": "复制成功！"
+  },
+  "emptyState": {
+    "line1": "剪贴板历史为空",
+    "line2": "复制一些内容后，它们会出现在这里"
+  },
+  "settings": {
+    "title": "设置",
+    "enableAudio": "启用音效",
+    "shouldCapture": "监控剪贴板",
+    "globalHotkey": "全局快捷键",
+    "previewInfo": "图片文件预览仅支持小于 5MB 的图片"
+  },
+  "fileInfo": {
+    "multipleFiles": "共 {{count}} 个文件"
+  }
+}

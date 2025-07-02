@@ -333,7 +333,6 @@ const pluginAPI = {
       shell.openPath(filePath).then((error) => {
         if (error) {
           console.error('打开文件失败:', error)
-          // 可以在这里添加通知用户的逻辑
         }
       })
     } catch (error) {

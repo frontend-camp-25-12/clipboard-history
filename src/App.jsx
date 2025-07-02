@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import CategorySelector from './components/CategorySelector'
 import HistoryList from './components/HistoryList'
 import Notification from './components/Notification'
@@ -7,6 +8,7 @@ import SettingsModal from './components/SettingsModal'
 import './styles/components/App.css'
 
 function App() {
+  const { t } = useTranslation()
   const [history, setHistory] = useState([])
   const [settings, setSettings] = useState({
     enableAudio: true,
@@ -179,12 +181,12 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>剪贴板历史</h1>
+        <h1>{t('appTitle')}</h1>
         <div className="controls">
           <button
             className="theme-btn"
             onClick={toggleTheme}
-            title={theme === 'light' ? '切换到深色模式' : '切换到亮色模式'}
+            title={t('tooltip.toggleTheme')}
           >
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
@@ -192,14 +194,14 @@ function App() {
           <button
             className="clear-btn"
             onClick={handleClearHistory}
-            title="清空历史"
+            title={t('tooltip.clearHistory')}
           >
             🗑️
           </button>
           <button
             className="settings-btn"
             onClick={() => setShowSettings(true)}
-            title="设置"
+            title={t('tooltip.settings')}
           >
             ⚙️
           </button>
@@ -213,7 +215,7 @@ function App() {
       />
 
       <div className="storage-info">
-        存储: {history.length}条 ({formatStorageSize})
+        {t('storageInfo', { count: history.length, size: formatStorageSize })}
       </div>
 
       <HistoryList
@@ -234,8 +236,8 @@ function App() {
 
       {history.length === 0 && (
         <div className="empty-state">
-          <p>剪贴板历史为空</p>
-          <p>复制一些内容后，它们会出现在这里</p>
+          <p>{t('emptyState.line1')}</p>
+          <p>{t('emptyState.line2')}</p>
         </div>
       )}
 
