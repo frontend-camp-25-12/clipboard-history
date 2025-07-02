@@ -7,6 +7,12 @@
   "preload": "preload/preload.js",
   "content": "src/index.html",
   "background": true,
+  "i18n": {
+    "en": {
+      "name": "Clipboard History",
+      "description": "Support text, image and file copy, paste and mark"
+    }
+  },
   "window": {
     "width": 800,
     "height": 600,
@@ -21,7 +27,11 @@
       "label": "打开界面，查找想要复制的剪贴板历史",
       "hotKey": true,
       "searchable": true,
-      "cmds": ["打开、搜索、复制剪贴板历史记录", "文本、图片、文件历史"]
+      "cmds": [
+        "打开、搜索、复制剪贴板历史记录",
+        "文本、图片、文件历史",
+        "clipboard history"
+      ]
     }
   ]
 }
