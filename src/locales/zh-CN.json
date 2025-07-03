@@ -55,5 +55,8 @@
   },
   "fileInfo": {
     "multipleFiles": "共 {{count}} 个文件"
+  },
+  "placeholder": {
+    "search": "搜索历史记录"
   }
 }

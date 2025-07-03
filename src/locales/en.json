@@ -55,5 +55,8 @@
   },
   "fileInfo": {
     "multipleFiles": "{{count}} files"
+  },
+  "placeholder": {
+    "search": "Search history"
   }
 }

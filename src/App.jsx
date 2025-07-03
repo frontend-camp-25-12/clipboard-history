@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import CategorySelector from './components/CategorySelector';
 import HistoryList from './components/HistoryList';
 import Notification from './components/Notification';
+import SearchBar from './components/SearchBar.jsx';
 import SettingsModal from './components/SettingsModal';
 
 import './styles/components/App.css';
@@ -22,13 +23,45 @@ function App() {
     message: ''
   });
   const [theme, setTheme] = useState('light');
+  const [searchText, setSearchText] = useState('');
 
   // 使用useMemo优化过滤性能
   const filteredHistory = useMemo(() => {
-    if (currentCategory === 'all') return history;
-    if (currentCategory === 'star') return history.filter((item) => item.star);
-    return history.filter((item) => item.type === currentCategory);
-  }, [history, currentCategory]);
+    let result = history;
+
+    // 先按类别过滤
+    if (currentCategory !== 'all') {
+      if (currentCategory === 'star') {
+        result = result.filter((item) => item.star);
+      } else {
+        result = result.filter((item) => item.type === currentCategory);
+      }
+    }
+
+    // 再按搜索文本过滤
+    if (searchText.trim()) {
+      const lowerSearch = searchText.toLowerCase();
+      result = result.filter((item) => {
+        // 文本类型直接匹配内容
+        if (item.type === 'text') {
+          return item.content.toLowerCase().includes(lowerSearch);
+        }
+        // 文件类型匹配路径或文件名
+        if (item.type === 'file') {
+          if (Array.isArray(item.content)) {
+            return item.content.some((file) =>
+              file.toLowerCase().includes(lowerSearch)
+            );
+          }
+          return item.content.toLowerCase().includes(lowerSearch);
+        }
+        // 图片类型不参与搜索
+        return false;
+      });
+    }
+
+    return result;
+  }, [history, currentCategory, searchText]);
 
   const handleCategoryChange = (category) => {
     setCurrentCategory(category);
@@ -190,6 +223,11 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <h1>{t('appTitle')}</h1>
+
+        <div className="header-search-container">
+          <SearchBar value={searchText} onChange={setSearchText} />
+        </div>
+
         <div className="controls">
           <button
             className="theme-btn"
@@ -200,7 +238,7 @@ function App() {
           </button>
 
           <button
-            className="clear-btn"
+            className="clear-history-btn"
             onClick={handleClearHistory}
             title={t('tooltip.clearHistory')}
           >

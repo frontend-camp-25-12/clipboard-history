@@ -16,12 +16,23 @@
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .app-header h1 {
   margin: 0;
   font-size: 1.2rem;
   color: var(--color-text);
+  min-width: 100px;
+}
+
+.header-search-container {
+  flex: 1;
+  min-width: 150px;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
 }
 
 .controls {
@@ -81,4 +92,10 @@
   padding: 20px;
   text-align: center;
   transition: color 0.3s ease;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 350px;
+  margin: 0 auto;
 }
