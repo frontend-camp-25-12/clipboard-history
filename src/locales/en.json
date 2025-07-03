@@ -1,6 +1,6 @@
 {
   "appTitle": "Clipboard History",
-  "storageInfo": "Storage: {{count}} items ({{size}})",
+  "storageInfo": "Storage: {{count}} items",
   "category": {
     "all": "All",
     "text": "Text",

@@ -1,6 +1,6 @@
 {
   "appTitle": "剪贴板历史",
-  "storageInfo": "存储: {{count}}条 ({{size}})",
+  "storageInfo": "存储: {{count}}条",
   "category": {
     "all": "全部",
     "text": "文本",
