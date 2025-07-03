@@ -17,7 +17,7 @@ const IMAGE_EXTENSIONS = [
 ];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_HISTORY = 100000;
-const SYNC_INTERVAL = 60 * 1000;
+const SYNC_INTERVAL = 2 * 60 * 1000;
 
 // ==================== 状态管理 ====================
 let localStore = {
@@ -567,6 +567,7 @@ const pluginAPI = {
 
 // ==================== 初始化 ====================
 // 初始化存储并启动定时同步
+console.log(`渲染进程启动，PID: ${process.pid}`);
 initStore().then(() => {
   startSyncTimer();
 
