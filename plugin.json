@@ -2,7 +2,7 @@
   "id": "com.example.clipboardhistory",
   "name": "剪贴板历史",
   "description": "记录剪贴板历史，支持文本、图片和文件的复制与粘贴",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "logo": "icons/icon.png",
   "preload": "preload/preload.js",
   "content": "src/index.html",
@@ -24,13 +24,32 @@
   "features": [
     {
       "code": "openClipboardHistory",
-      "label": "打开界面，查找想要复制的剪贴板历史",
+      "label": "查看历史剪贴板",
+      "i18n": {
+        "en": {
+          "label": "Open Clipboard History"
+        }
+      },
       "hotKey": true,
       "searchable": true,
       "cmds": [
-        "打开、搜索、复制剪贴板历史记录",
-        "文本、图片、文件历史",
+        "历史剪贴板",
         "clipboard history"
+      ]
+    },
+    {
+      "code": "searchClipboardHistory",
+      "label": "搜索剪贴板",
+      "i18n": {
+        "en": {
+          "label": "Search Clipboard History"
+        }
+      },
+      "searchable": true,
+      "cmds": [
+        {
+          "type": "any"
+        }
       ]
     }
   ]
