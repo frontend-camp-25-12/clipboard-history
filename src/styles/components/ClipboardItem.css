@@ -18,6 +18,10 @@
   z-index: 100;
 }
 
+.history-list .clipboard-item {
+  margin-bottom: 12px;
+}
+
 .clipboard-item:hover .copy-hint {
   opacity: 1;
   transform: translateY(0);
@@ -37,7 +41,7 @@
 .clipboard-item {
   background-color: var(--color-item-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 8px var(--color-shadow);
+  box-shadow: 0 2px 8px var(--color-shadow) !important;
   margin-bottom: 12px;
   overflow: hidden;
   transition:
@@ -45,6 +49,8 @@
     box-shadow 0.2s ease;
   border: 1px solid var(--color-border);
   position: relative;
+  transform: none !important;
+  z-index: auto !important;
 }
 
 .clipboard-item:hover {
@@ -53,6 +59,27 @@
     0 6px 15px var(--color-shadow-hover),
     inset 0 0 0 1px var(--color-primary);
   z-index: 5;
+}
+
+.clipboard-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  box-shadow:
+    0 6px 15px var(--color-shadow-hover),
+    inset 0 0 0 1px var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 8px;
+}
+
+.clipboard-item:hover::after {
+  opacity: 1;
 }
 
 .item-header {

@@ -1,15 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import '../styles/components/CategorySelector.css';
 
-const CategorySelector = ({ currentCategory, onChange, history }) => {
-  const categoryCounts = {
-    all: history.length,
-    text: history.filter((item) => item.type === 'text').length,
-    image: history.filter((item) => item.type === 'image').length,
-    file: history.filter((item) => item.type === 'file').length,
-    star: history.filter((item) => item.star).length
-  };
+const CategorySelector = ({ currentCategory, onChange, categoryCounts }) => {
   const { t } = useTranslation();
+
   return (
     <div className="category-selector">
       {['all', 'text', 'image', 'file', 'star'].map((category) => (
@@ -18,7 +12,7 @@ const CategorySelector = ({ currentCategory, onChange, history }) => {
           className={`category-btn ${currentCategory === category ? 'active' : ''}`}
           onClick={() => onChange(category)}
         >
-          {t(`category.${category}`)} {/* 使用翻译 */}
+          {t(`category.${category}`)}
           <span className="count-badge">({categoryCounts[category]})</span>
         </button>
       ))}

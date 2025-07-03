@@ -1,123 +1,116 @@
-import format from 'date-fns/format'
-import { useTranslation } from 'react-i18next'
-import { useCallback, useEffect, useState } from 'react'
-import '../styles/components/ClipboardItem.css'
+import format from 'date-fns/format';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '../styles/components/ClipboardItem.css';
 
 const ClipboardItem = ({
   item,
   onDelete,
   onCopy,
   onToggleStar,
-  onCopySuccess
+  onCopySuccess,
+  reportHeight,
+  isHovered
 }) => {
-  const { t } = useTranslation()
-  const [expanded, setExpanded] = useState(false)
-  const [imageEnlarged, setImageEnlarged] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
-  const [expandedFiles, setExpandedFiles] = useState(false)
-  const [fileStatus, setFileStatus] = useState({})
+  const { t } = useTranslation();
+  const [expanded, setExpanded] = useState(false);
+  const [imageEnlarged, setImageEnlarged] = useState(false);
+  const [expandedFiles, setExpandedFiles] = useState(false);
+  const [fileStatusMap, setFileStatusMap] = useState({});
+
+  const itemRef = useRef();
 
   const handleCopy = () => {
-    onCopy(item)
-    onCopySuccess(item)
-  }
+    onCopy(item);
+    onCopySuccess(item);
+  };
 
   const handleToggleStar = (e) => {
-    e.stopPropagation()
-    onToggleStar(item.timestamp)
-  }
+    e.stopPropagation();
+    onToggleStar(item.timestamp);
+  };
 
   const handleDelete = (e) => {
-    e.stopPropagation()
-    onDelete(item.timestamp)
-  }
+    e.stopPropagation();
+    onDelete(item.timestamp);
+  };
 
   const toggleExpand = (e) => {
-    e.stopPropagation()
-    setExpanded(!expanded)
-  }
+    e.stopPropagation();
+    setExpanded(!expanded);
+  };
 
   const toggleImageEnlarge = (e) => {
-    e.stopPropagation()
-    setImageEnlarged(!imageEnlarged)
-  }
+    e.stopPropagation();
+    setImageEnlarged(!imageEnlarged);
+  };
 
-  const handleKeyDown = useCallback(
-    (e) => {
-      // 检查是否按下 Ctrl+C (Windows) 或 Cmd+C (Mac)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
-        if (isHovered) {
-          handleCopy()
-        }
-      }
-    },
-    [isHovered, handleCopy]
-  )
-
+  // 报告高度给父组件
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
+    if (itemRef.current && reportHeight) {
+      const height = itemRef.current.offsetHeight;
+      reportHeight(height + 12);
     }
-  }, [handleKeyDown])
-
-  useEffect(() => {
-    if (item.type === 'file' && Array.isArray(item.content)) {
-      const checkFiles = () => {
-        const status = {}
-        item.content.forEach((filePath) => {
-          try {
-            if (
-              window.clipboardPlugin &&
-              window.clipboardPlugin.checkFileExists
-            ) {
-              status[filePath] =
-                window.clipboardPlugin.checkFileExists(filePath)
-            }
-          } catch (error) {
-            console.error('检查文件存在失败:', error)
-            status[filePath] = true
-          }
-        })
-        setFileStatus(status)
-      }
-
-      // 初始检查
-      checkFiles()
-
-      // 添加定期检查（每1分钟检查一次）
-      const interval = setInterval(checkFiles, 60000)
-
-      return () => clearInterval(interval)
-    }
-  }, [item])
+  }, [expanded, imageEnlarged, expandedFiles, reportHeight]);
 
   const toggleFileList = (e) => {
-    e.stopPropagation()
-    setExpandedFiles(!expandedFiles)
-  }
+    e.stopPropagation();
+    setExpandedFiles(!expandedFiles);
+  };
 
   const openFile = (e, filePath) => {
-    e.stopPropagation()
+    e.stopPropagation();
     try {
-      if (window.clipboardPlugin && window.clipboardPlugin.openFile) {
-        window.clipboardPlugin.openFile(filePath)
+      const exists = window.clipboardPlugin.checkFileExists(filePath);
+
+      // 2. 更新文件状态
+      setFileStatusMap((prev) => ({
+        ...prev,
+        [filePath]: exists
+      }));
+
+      // 3. 如果文件存在则打开
+      if (exists && window.clipboardPlugin.openFile) {
+        window.clipboardPlugin.openFile(filePath);
       }
     } catch (error) {
-      console.error('打开文件失败:', error)
+      console.error('打开文件失败:', error);
+      // 文件检查失败时标记为不存在
+      setFileStatusMap((prev) => ({
+        ...prev,
+        [filePath]: false
+      }));
     }
-  }
+  };
+
+  // 渲染文件项
+  const renderFileItem = (file, index) => {
+    const fileExists = fileStatusMap[file] !== false;
+
+    return (
+      <div
+        key={index}
+        className={`file-item ${fileExists ? '' : 'deleted'}`}
+        onClick={(e) => openFile(e, file)}
+        title={fileExists ? t('tooltip.openFile') : t('tooltip.fileDeleted')}
+      >
+        <div className="file-name">
+          {getFileName(file)}
+          {!fileExists && (
+            <span className="file-deleted-badge">
+              {t('tooltip.fileDeleted')}
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div
-      className="clipboard-item"
-      onClick={handleCopy}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div ref={itemRef} className="clipboard-item" onClick={handleCopy}>
       {isHovered && (
         <div className="copy-hint">
-          <span>{t('tooltip.copy')}</span> {/* 使用翻译 */}
+          <span>{t('tooltip.copy')}</span>
         </div>
       )}
 
@@ -136,14 +129,14 @@ const ClipboardItem = ({
           <button
             className={`star-btn ${item.star ? 'starred' : ''}`}
             onClick={handleToggleStar}
-            title={item.star ? t('tooltip.unstar') : t('tooltip.star')} // 使用翻译
+            title={item.star ? t('tooltip.unstar') : t('tooltip.star')}
           >
             {item.star ? '★' : '☆'}
           </button>
           <button
             className="delete-btn"
             onClick={handleDelete}
-            title={t('tooltip.delete')} // 使用翻译
+            title={t('tooltip.delete')}
           >
             ×
           </button>
@@ -158,8 +151,7 @@ const ClipboardItem = ({
             </div>
             {item.content.length > 200 && (
               <button className="expand-btn" onClick={toggleExpand}>
-                {expanded ? t('button.collapse') : t('button.expand')}{' '}
-                {/* 使用翻译 */}
+                {expanded ? t('button.collapse') : t('button.expand')}
               </button>
             )}
           </>
@@ -171,14 +163,14 @@ const ClipboardItem = ({
               src={item.type === 'image' ? item.content : item.preview}
               alt={
                 item.type === 'image' ? t('itemType.image') : t('itemType.file')
-              } // 使用翻译
+              }
               className={`image-preview ${imageEnlarged ? 'enlarged' : ''}`}
               onClick={toggleImageEnlarge}
             />
             <button
               className="enlarge-btn"
               onClick={toggleImageEnlarge}
-              title={imageEnlarged ? t('button.shrink') : t('button.enlarge')} // 使用翻译
+              title={imageEnlarged ? t('button.shrink') : t('button.enlarge')}
             >
               {imageEnlarged ? '↗' : '⛶'}
             </button>
@@ -190,8 +182,7 @@ const ClipboardItem = ({
             {Array.isArray(item.content) ? (
               <div className="multiple-files">
                 <div className="file-count">
-                  {t('fileInfo.multipleFiles', { count: item.content.length })}{' '}
-                  {/* 使用翻译 */}
+                  {t('fileInfo.multipleFiles', { count: item.content.length })}
                   {item.content.length > 3 && (
                     <button
                       className="file-expand-btn"
@@ -199,59 +190,18 @@ const ClipboardItem = ({
                     >
                       {expandedFiles
                         ? t('button.collapse')
-                        : t('button.expand')}{' '}
-                      {/* 使用翻译 */}
+                        : t('button.expand')}
                     </button>
                   )}
                 </div>
 
                 <div className={`file-list ${expandedFiles ? 'expanded' : ''}`}>
-                  {item.content.map((file, index) => {
-                    const fileExists = fileStatus[file] !== false
-                    return (
-                      <div
-                        key={index}
-                        className={`file-item ${fileExists ? '' : 'deleted'}`}
-                        onClick={(e) => openFile(e, file)}
-                        title={
-                          fileExists
-                            ? t('tooltip.openFile')
-                            : t('tooltip.fileDeleted')
-                        } // 使用翻译
-                      >
-                        <div className="file-name">
-                          {getFileName(file)}
-                          {!fileExists && (
-                            <span className="file-deleted-badge">
-                              {t('tooltip.fileDeleted')} {/* 使用翻译 */}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )
-                  })}
+                  {item.content.map(renderFileItem)}
                 </div>
               </div>
             ) : (
               <>
-                <div
-                  className={`file-item ${fileStatus[item.content] !== false ? '' : 'deleted'}`}
-                  onClick={(e) => openFile(e, item.content)}
-                  title={
-                    fileStatus[item.content] !== false
-                      ? t('tooltip.openFile')
-                      : t('tooltip.fileDeleted')
-                  } // 使用翻译
-                >
-                  <div className="file-name">
-                    {getFileName(item.content)}
-                    {fileStatus[item.content] === false && (
-                      <span className="file-deleted-badge">
-                        {t('tooltip.fileDeleted')} {/* 使用翻译 */}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                {renderFileItem(item.content)}
                 <div className="file-path">{item.content}</div>
               </>
             )}
@@ -263,12 +213,12 @@ const ClipboardItem = ({
         {format(new Date(item.timestamp), 'yyyy-MM-dd HH:mm:ss')}
       </div>
     </div>
-  )
-}
+  );
+};
 
 // 辅助函数：从路径获取文件名
 function getFileName(path) {
-  return path.split('\\').pop().split('/').pop()
+  return path.split('\\').pop().split('/').pop();
 }
 
-export default ClipboardItem
+export default ClipboardItem;

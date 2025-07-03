@@ -166,7 +166,7 @@ function playAudio(type) {
     }
 
     const audio = new Audio(audioPaths[type]);
-    audio.volume = 0.5; // 设置合适音量
+    audio.volume = 0.3; // 设置合适音量
 
     audio.play().catch((error) => {
       if (error.name === 'NotAllowedError') {
@@ -483,6 +483,10 @@ const pluginAPI = {
                 item.type === updatedContent.type &&
                 compareContent(item.content, updatedContent.content) === true
             );
+
+            if (newHistory[existingIndex].star) {
+              updatedContent.star = true;
+            }
 
             // 移除旧记录
             if (existingIndex !== -1) {

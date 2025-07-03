@@ -46,7 +46,8 @@ function App() {
     // 初始化加载历史记录和设置
     const loadedSettings = window.clipboardPlugin.getSettings();
     setSettings(loadedSettings);
-    setHistory(window.clipboardPlugin.getHistory());
+    const initialHistory = window.clipboardPlugin.getHistory();
+    setHistory(initialHistory);
 
     // 初始化主题
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
@@ -158,6 +159,33 @@ function App() {
     }, 2000);
   };
 
+  const [categoryCounts, setCategoryCounts] = useState({
+    all: 0,
+    text: 0,
+    image: 0,
+    file: 0,
+    star: 0
+  });
+
+  useEffect(() => {
+    const newCounts = {
+      all: history.length,
+      text: 0,
+      image: 0,
+      file: 0,
+      star: 0
+    };
+
+    history.forEach((item) => {
+      if (item.type === 'text') newCounts.text++;
+      if (item.type === 'image') newCounts.image++;
+      if (item.type === 'file') newCounts.file++;
+      if (item.star) newCounts.star++;
+    });
+
+    setCategoryCounts(newCounts);
+  }, [history]);
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -191,7 +219,7 @@ function App() {
       <CategorySelector
         currentCategory={currentCategory}
         onChange={handleCategoryChange}
-        history={history}
+        categoryCounts={categoryCounts}
       />
 
       <div className="storage-info">
