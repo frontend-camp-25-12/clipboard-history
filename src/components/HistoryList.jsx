@@ -1,4 +1,11 @@
-import React, { memo, useRef, forwardRef, useState, useEffect } from 'react';
+import React, {
+  memo,
+  useRef,
+  forwardRef,
+  useState,
+  useEffect,
+  useCallback
+} from 'react';
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import ClipboardItem from './ClipboardItem';
@@ -14,6 +21,9 @@ const HistoryList = ({
   const listRef = useRef();
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
+  // 状态管理：存储每个项目的展开状态
+  const [itemStates, setItemStates] = useState({});
+
   // 高度缓存（初始值150px）
   const sizeMap = useRef({});
   const setSize = useRef((index, size) => {
@@ -23,6 +33,17 @@ const HistoryList = ({
 
   // 获取项目高度（带缓存）
   const getItemSize = (index) => sizeMap.current[index] || 150;
+
+  // 更新项目状态
+  const updateItemState = useCallback((timestamp, newState) => {
+    setItemStates((prev) => ({
+      ...prev,
+      [timestamp]: {
+        ...prev[timestamp],
+        ...newState
+      }
+    }));
+  }, []);
 
   // 全局键盘事件处理
   useEffect(() => {
@@ -47,6 +68,8 @@ const HistoryList = ({
   const Row = memo(
     forwardRef(({ index, style }, ref) => {
       const item = history[index];
+      const itemState = itemStates[item.timestamp] || {};
+
       return (
         <div
           ref={ref}
@@ -64,6 +87,8 @@ const HistoryList = ({
             onCopySuccess={onCopySuccess}
             reportHeight={(height) => setSize(index, height)}
             isHovered={hoveredIndex === index}
+            itemState={itemState}
+            updateItemState={updateItemState}
           />
         </div>
       );

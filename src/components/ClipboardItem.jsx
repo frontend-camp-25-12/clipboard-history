@@ -10,14 +10,18 @@ const ClipboardItem = ({
   onToggleStar,
   onCopySuccess,
   reportHeight,
-  isHovered
+  isHovered,
+  itemState = {}, // 从父组件接收的状态
+  updateItemState // 状态更新函数
 }) => {
   const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
-  const [imageEnlarged, setImageEnlarged] = useState(false);
-  const [expandedFiles, setExpandedFiles] = useState(false);
-  const [fileStatusMap, setFileStatusMap] = useState({});
 
+  // 从父组件状态中获取展开状态
+  const expanded = itemState.expanded || false;
+  const imageEnlarged = itemState.imageEnlarged || false;
+  const expandedFiles = itemState.expandedFiles || false;
+
+  const [fileStatusMap, setFileStatusMap] = useState({});
   const itemRef = useRef();
 
   const handleCopy = () => {
@@ -37,12 +41,12 @@ const ClipboardItem = ({
 
   const toggleExpand = (e) => {
     e.stopPropagation();
-    setExpanded(!expanded);
+    updateItemState(item.timestamp, { expanded: !expanded });
   };
 
   const toggleImageEnlarge = (e) => {
     e.stopPropagation();
-    setImageEnlarged(!imageEnlarged);
+    updateItemState(item.timestamp, { imageEnlarged: !imageEnlarged });
   };
 
   // 报告高度给父组件
@@ -55,7 +59,7 @@ const ClipboardItem = ({
 
   const toggleFileList = (e) => {
     e.stopPropagation();
-    setExpandedFiles(!expandedFiles);
+    updateItemState(item.timestamp, { expandedFiles: !expandedFiles });
   };
 
   const openFile = (e, filePath) => {
